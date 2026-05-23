@@ -3,7 +3,7 @@
   "description": "Evo Package Manager module for EvolutionCMS CE 3",
   "type": "evolutioncms-package",
   "license": "MIT",
-  "keywords": ["evolutioncms", "package manager", "ab-testing", "tdd", "ddd"],
+  "keywords": ["evolutioncms", "package manager", "tdd", "ddd"],
   "support": {
     "issues": "https://github.com/Ambrion/evocms-evo-package-manager/issues",
     "source": "https://github.com/Ambrion/evocms-evo-package-manager",

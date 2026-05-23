@@ -1,0 +1,66 @@
+{
+  "name": "ambrion/evocms-evo-package-manager",
+  "description": "Evo Package Manager module for EvolutionCMS CE 3",
+  "type": "evolutioncms-package",
+  "license": "MIT",
+  "keywords": ["evolutioncms", "package manager", "ab-testing", "tdd", "ddd"],
+  "support": {
+    "issues": "https://github.com/Ambrion/evocms-evo-package-manager/issues",
+    "source": "https://github.com/Ambrion/evocms-evo-package-manager",
+    "docs": "https://github.com/Ambrion/evocms-evo-package-manager/blob/master/README.md"
+  },
+  "authors": [
+    {
+      "name": "Ambrion (Igor Brikov)",
+      "email": "ping@ambrion.dev",
+      "homepage": "https://ambrion.dev",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^8.3"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^12.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "EvolutionCMS\\EvoPackageManager\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "EvolutionCMS\\EvoPackageManager\\Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "phpstan/extension-installer": true
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "test:coverage": "phpunit --coverage-html .coverage"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "EvolutionCMS\\EvoPackageManager\\EvoPackageManagerServiceProvider"
+      ]
+    },
+    "evo": {
+      "post-install": {
+        "publish": {
+          "provider": "EvolutionCMS\\EvoPackageManager\\EvoPackageManagerServiceProvider"
+        },
+        "migrate": {
+          "run": true,
+          "force": false
+        }
+      }
+    }
+  },
+  "minimum-stability": "alpha",
+  "prefer-stable": true
+}

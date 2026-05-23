@@ -1,0 +1,24 @@
+{
+  "name": "evolutioncms/evo-package-manager",
+  "require": {
+
+  },
+  "autoload": {
+    "psr-4": {
+      "EvolutionCMS\\EvoPackageManager\\": "../src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "EvolutionCMS\\EvoPackageManager\\Tests\\": "../tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "EvolutionCMS\\EvoPackageManager\\EvoPackageManagerServiceProvider"
+      ]
+
+    }
+  }
+}

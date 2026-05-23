@@ -274,8 +274,7 @@ class PackageAdminController extends Controller
             );
 
             $this->installUseCase->execute(
-                $requirement,
-                $request->boolean('run_composer', true)
+                $requirement
             );
 
             return redirect()->route('evoPackageManager::index')

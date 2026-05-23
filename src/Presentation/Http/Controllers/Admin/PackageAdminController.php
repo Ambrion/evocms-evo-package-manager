@@ -136,41 +136,6 @@ class PackageAdminController extends Controller
         ];
     }
 
-    //    /**
-    //     * Подготовка данных для шаблона пагинации с "разрывом"
-    //     */
-    //    private function preparePaginationData(
-    //        string $routeName,
-    //        int $totalCount,
-    //        int $currentPage,
-    //        int $perPage,
-    //        array $filters
-    //    ): array {
-    //        $totalPages = (int) ceil($totalCount / $perPage);
-    //        $hasPrev = $currentPage > 1;
-    //        $hasNext = $currentPage < $totalPages;
-    //
-    //        // Фильтруем пустые значения
-    //        $cleanFilters = array_filter($filters, fn($v) => $v !== null && trim((string) $v) !== '');
-    //
-    //        $pages = $this->generatePaginationPages($currentPage, $totalPages);
-    //
-    //        return [
-    //            'current_page' => $currentPage,
-    //            'total_pages' => $totalPages,
-    //            'has_prev' => $hasPrev,
-    //            'has_next' => $hasNext,
-    //            'total' => $totalCount,
-    //            'per_page' => $perPage,
-    //            'pages' => $pages,
-    //            'urls' => [
-    //                'prev' => $hasPrev ? route($routeName, array_merge($cleanFilters, ['offset' => ($currentPage - 2) * $perPage, 'limit' => $perPage])) : null,
-    //                'next' => $hasNext ? route($routeName, array_merge($cleanFilters, ['offset' => $currentPage * $perPage, 'limit' => $perPage])) : null,
-    //                'base' => route($routeName, $cleanFilters),
-    //            ],
-    //        ];
-    //    }
-
     /**
      * Генерация массива страниц с многоточием (как в feature-flags)
      * Возвращает: [1, 2, '...', 8, 9, 10, '...', 20]

@@ -14,7 +14,7 @@
 
 ```bash
 cd /core
-php artisan package:installrequire evocms-evo-package-manager "v0.1.0-alpha"
+php artisan package:installrequire ambrion/evocms-evo-package-manager "v0.1.0-alpha"
 php artisan vendor:publish --provider="EvolutionCMS\EvoPackageManager\EvoPackageManagerServiceProvider"
 php artisan migrate
 ```

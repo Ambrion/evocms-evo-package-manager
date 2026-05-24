@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EvolutionCMS\EvoPackageManager\Presentation\Http\Controllers\Admin;
 
-use EvolutionCMS\EvoPackageManager\Application\InstallPackageRequirementUseCase;
 use EvolutionCMS\EvoPackageManager\Application\ListPackagesUseCase;
 use EvolutionCMS\EvoPackageManager\Application\RemovePackageRequirementUseCase;
 use EvolutionCMS\EvoPackageManager\Application\SyncPackageRegistryUseCase;
@@ -13,15 +12,16 @@ use EvolutionCMS\EvoPackageManager\Presentation\Http\DTO\PackageViewDataDTO;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\View\View;
+use Symfony\Component\Process\Process;
 
 class PackageAdminController extends Controller
 {
     public function __construct(
         private readonly ListPackagesUseCase $listPackagesUseCase,
-        private readonly InstallPackageRequirementUseCase $installUseCase,
         private readonly RemovePackageRequirementUseCase $removeUseCase,
         private readonly SyncPackageRegistryUseCase $syncUseCase,
     ) {}
@@ -254,7 +254,9 @@ class PackageAdminController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Валидация
+        // Увеличиваем таймаут для самого HTTP-запроса
+        set_time_limit(360);
+
         $validator = Validator::make($request->all(), [
             'package' => 'required|regex:/^[a-z0-9\-_]+\/[a-z0-9\-_]+$/i',
             'version' => 'required|string',
@@ -268,23 +270,82 @@ class PackageAdminController extends Controller
         }
 
         try {
-            $requirement = PackageRequirement::fromStrings(
-                $request->input('package'),
-                $request->input('version')
-            );
+            $package = $request->input('package');
+            $version = $request->input('version');
 
-            $this->installUseCase->execute(
-                $requirement
-            );
+            //  Запускаем консольную команду через отдельный процесс
+            $artisanPath = EVO_CORE_PATH . 'artisan';
+            $process = new Process([
+                'php',
+                $artisanPath,
+                'evo:package:install',
+                $package,
+                $version
+            ]);
+
+            $process->setTimeout(300); // 5 минут на выполнение
+            $process->run();
+
+            //  Обрабатываем результат
+            if (! $process->isSuccessful()) {
+                $errorOutput = $process->getErrorOutput();
+                Log::error("[PackageInstall] Command failed", [
+                    'package' => $package,
+                    'exitCode' => $process->getExitCode(),
+                    'error' => $errorOutput
+                ]);
+
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', "Installation failed: " . trim($errorOutput));
+            }
+
+            //  Парсим вывод для показа пользователю
+            $output = $process->getOutput();
+            $messages = $this->parseCommandOutput($output);
+
+            Log::info("[PackageInstall] Success: {$package}", ['output' => $messages]);
 
             return redirect()->route('evoPackageManager::index')
-                ->with('success', "Package {$requirement->package()} installed successfully");
+                ->with('success', "Package {$package} installed successfully: " . implode('; ', $messages));
 
         } catch (\Throwable $e) {
+            Log::error("[PackageInstall] Exception: {$e->getMessage()}", [
+                'package' => $request->input('package'),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', "Failed to install package: {$e->getMessage()}");
         }
+    }
+
+    /**
+     * Парсит вывод команды для извлечения ключевых сообщений
+     */
+    private function parseCommandOutput(string $output): array
+    {
+        $messages = [];
+        $lines = explode("\n", $output);
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+
+            // Извлекаем сообщения с галочками/предупреждениями
+            if (preg_match('/[✓✔✔]/i', $line) || preg_match('/[⚠⚡]/i', $line)) {
+                // Убираем эмодзи и лишние пробелы для чистого вывода
+                $clean = preg_replace('/[✓✔✔⚠⚡•]\s*/', '', $line);
+                if (!empty($clean)) {
+                    $messages[] = $clean;
+                }
+            }
+
+            // Альтернативно: можно возвращать весь вывод, если нужно
+            // $messages[] = $line;
+        }
+
+        return array_filter($messages);
     }
 
     /**

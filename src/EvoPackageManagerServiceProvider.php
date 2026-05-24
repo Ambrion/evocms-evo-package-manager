@@ -129,7 +129,6 @@ class EvoPackageManagerServiceProvider extends ServiceProvider
         // PackageAdminController
         $this->app->bind(PackageAdminController::class, fn ($app) => new PackageAdminController(
             $app->make(ListPackagesUseCase::class),
-            $app->make(InstallPackageRequirementUseCase::class),
             $app->make(RemovePackageRequirementUseCase::class),
             $app->make(SyncPackageRegistryUseCase::class)
         ));

@@ -6,7 +6,7 @@ Unified package management solution for **EvolutionCMS CE 3** — via CLI or con
 
 This module adds console commands and a user interface for streamlined package lifecycle management within EvolutionCMS CE 3.
 
-Automatic post-installation support is available — migrations, asset publishing — when package developers configure these actions in `composer.json`.
+Automatic post-installation migrations and publication of resources are available; the hope is that sometime the package developer will be able to configure this in `composer.json`.
 
 A unified database registry of installed packages provides centralized package information viewing.
 

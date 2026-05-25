@@ -37,7 +37,6 @@ class EvoPackageManagerServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadTranslationsFrom(__DIR__.'/../lang', $this->namespace);
         $this->loadViewsFrom(__DIR__.'/../resources/views', $this->namespace);
-        $this->loadRoutesFrom(__DIR__.'/../routes/module.php');
 
         if ($this->app->runningInConsole()) {
             $this->commands([
